@@ -1,3 +1,8 @@
+package GUI;
+
+import domain.Product;
+import domain.Zone;
+
 import javax.swing.*;
 import java.awt.*;
 import java.io.IOException;
@@ -24,7 +29,7 @@ public class AddProductsFrame extends JFrame {
 
         JPanel namePanel = new JPanel(new FlowLayout());
         name = new JTextPane();
-        name.setText(zone.name);
+        name.setText(zone.getName());
         nameLabel = new JLabel("Name: ");
         namePanel.add(name, FlowLayout.LEFT);
         namePanel.add(nameLabel, FlowLayout.LEFT);
@@ -37,7 +42,7 @@ public class AddProductsFrame extends JFrame {
         productPanel.setLayout(new BoxLayout(productPanel, BoxLayout.Y_AXIS));
 
         productList.setModel(productModel);
-        for (Product p : zone.products) {
+        for (Product p : zone.getProducts()) {
             productModel.addElement(p);
         }
 
@@ -58,7 +63,7 @@ public class AddProductsFrame extends JFrame {
         deleteProductButton.addActionListener(e -> {
             int index = productList.getSelectedIndex();
             if (index != -1) {
-                zone.products.remove(productList.getSelectedValue());
+                zone.getProducts().remove(productList.getSelectedValue());
                 productList.remove(index);
                 productModel.remove(index);
                 productList.updateUI();
@@ -74,12 +79,12 @@ public class AddProductsFrame extends JFrame {
                     productCategoryPanel.text.getText());
             if (!newProduct) {
                 int index = productList.getSelectedIndex();
-                zone.products.remove(productList.getSelectedValue());
+                zone.getProducts().remove(productList.getSelectedValue());
                 productList.remove(index);
                 productModel.remove(index);
             }
             productModel.addElement(p);
-            zone.products.add(p);
+            zone.getProducts().add(p);
             productList.updateUI();
         });
 
@@ -94,10 +99,10 @@ public class AddProductsFrame extends JFrame {
         productList.getSelectionModel().addListSelectionListener(e -> {
             Product p = productList.getSelectedValue();
             if (p != null) {
-                productNamePanel.text.setText(p.name);
-                productQuantityPanel.number.setValue(p.quantity);
-                productPricePanel.number.setValue(p.price);
-                productCategoryPanel.text.setText(String.valueOf(p.category));
+                productNamePanel.text.setText(p.getName());
+                productQuantityPanel.number.setValue(p.getQuantity());
+                productPricePanel.number.setValue(p.getPrice());
+                productCategoryPanel.text.setText(String.valueOf(p.getCategory()));
             }
             newProduct = false;
         });

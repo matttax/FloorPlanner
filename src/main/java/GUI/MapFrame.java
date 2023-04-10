@@ -1,3 +1,8 @@
+package GUI;
+
+import controllers.MapController;
+import python.PythonReader;
+
 import javax.swing.*;
 import java.awt.*;
 import java.io.IOException;
@@ -8,11 +13,11 @@ public class MapFrame extends JFrame {
     MapPanel panel;
     String file;
     ArrayList<ArrayList<Long>> matrix;
-    PlanController planController;
+    MapController mapController;
 
-    MapFrame(String file) {
+    public MapFrame(String file) {
         this.file = file;
-        planController = new PlanController(file);
+        mapController = new MapController(file);
         this.matrix = loadFile();
         this.panel = new MapPanel(matrix);
         this.setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
@@ -31,13 +36,13 @@ public class MapFrame extends JFrame {
         JButton b3 = new JButton("New zone");
         JButton b4 = new JButton("Merge zones");
         b4.addActionListener(e -> {
-            planController.mergeZones(panel.selectedRight1, panel.selectedRight2, panel.matrix);
+            mapController.mergeZones(panel.selectedRight1, panel.selectedRight2, panel.matrix);
             panel.selectedZone.clear();
             panel.repaint();
         });
         b3.addActionListener(e -> {
             try {
-                new AddProductsFrame(planController.getZone(panel.selectedZone));
+                new AddProductsFrame(mapController.getZone(panel.selectedZone));
             } catch (IOException ex) {
                 throw new RuntimeException(ex);
             }
@@ -53,7 +58,7 @@ public class MapFrame extends JFrame {
     }
 
     private ArrayList<ArrayList<Long>> loadFile() {
-        return Main.getMatrix(file);
+        return PythonReader.getMatrix(file);
     }
 
 }
