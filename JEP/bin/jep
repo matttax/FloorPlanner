@@ -1,0 +1,28 @@
+#!/bin/sh
+
+
+
+
+LD_LIBRARY_PATH="/usr/lib:/usr/local/lib/python3.8/dist-packages/"; export LD_LIBRARY_PATH
+LD_PRELOAD="/usr/lib/x86_64-linux-gnu/libpython3.8.so"; export LD_PRELOAD
+
+jep_dir=/usr/local/lib/python3.8/dist-packages/jep
+
+if [ ! -d "$jep_dir" ]
+then
+    jep_dir=/usr/local/lib/python3.8/dist-packages/jep-4.1.1-py3.8-linux-x86_64.egg/jep
+fi
+
+cp="$jep_dir/jep-4.1.1.jar"
+if test "x$CLASSPATH" != "x"; then
+    cp="$cp":"$CLASSPATH"
+fi
+
+jni_path=$jep_dir
+
+args=$*
+if test "x$args" = "x"; then
+  args="$jep_dir/console.py"
+fi
+
+exec java -classpath "$cp" -Djava.library.path="$jni_path" jep.Run $args
