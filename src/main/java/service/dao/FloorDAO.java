@@ -50,11 +50,14 @@ public class FloorDAO extends AbstractDAO<Floor, String[]> {
 
     @Override
     protected Floor getObject(String[] fields) {
-        return null;
+        return new Floor(Long.parseLong(fields[0]), Integer.parseInt(fields[1]), fields[2]);
     }
 
     @Override
     protected Floor getObject(ResultSet resSet) throws SQLException {
-        return null;
+        long buildingId = resSet.getLong("building_id");
+        int floorNumber = resSet.getInt("floor_number");
+        String map = resSet.getString("map");
+        return new Floor(buildingId, floorNumber, map);
     }
 }

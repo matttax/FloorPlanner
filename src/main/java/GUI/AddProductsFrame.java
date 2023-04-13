@@ -1,13 +1,18 @@
 package GUI;
 
+import controllers.AddProductsController;
 import domain.Product;
 import domain.Zone;
 
 import javax.swing.*;
 import java.awt.*;
+import java.awt.event.WindowAdapter;
+import java.awt.event.WindowEvent;
 import java.io.IOException;
+import java.util.Objects;
 
 public class AddProductsFrame extends JFrame {
+    AddProductsController addProductsController;
 
     boolean newProduct;
     JTextPane name;
@@ -18,82 +23,54 @@ public class AddProductsFrame extends JFrame {
     DefaultListModel<Product> productModel;
     JPanel productPanel;
     JSplitPane productPane;
+    JPanel savePanel;
 
-    JButton addButton;
-    JButton saveProductButton;
+    StringPanel productNamePanel;
+    NumericPanel productQuantityPanel;
+    NumericPanel productPricePanel;
+    StringPanel productCategoryPanel;
 
     AddProductsFrame(Zone zone) throws IOException {
         newProduct = false;
+        addProductsController = new AddProductsController(zone);
         this.setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
         this.setSize(500, 500);
-
-        JPanel namePanel = new JPanel(new FlowLayout());
+        
         name = new JTextPane();
-        name.setText(zone.getName());
         nameLabel = new JLabel("Name: ");
-        namePanel.add(name, FlowLayout.LEFT);
-        namePanel.add(nameLabel, FlowLayout.LEFT);
-        this.add(namePanel, BorderLayout.NORTH);
 
         productList = new JList<>();
         productModel = new DefaultListModel<>();
         productPane = new JSplitPane();
-        productPanel = new JPanel();
-        productPanel.setLayout(new BoxLayout(productPanel, BoxLayout.Y_AXIS));
+
+        this.add(getNamePanel(), BorderLayout.NORTH);
+
+
 
         productList.setModel(productModel);
         for (Product p : zone.getProducts()) {
             productModel.addElement(p);
         }
 
-        productPane.setLeftComponent(new JScrollPane(productList));
+        productPane.setLeftComponent(getLeftPanel());
 
-        StringPanel productNamePanel = new StringPanel("Name: ");
-        NumericPanel productQuantityPanel = new NumericPanel("Quantity: ");
-        NumericPanel productPricePanel = new NumericPanel("Price: ");
-        StringPanel productCategoryPanel = new StringPanel("Category: ");
+        productPanel = new JPanel();
+        productPanel.setLayout(new BoxLayout(productPanel, BoxLayout.Y_AXIS));
+        productNamePanel = new StringPanel("Name: ");
+        productQuantityPanel = new NumericPanel("Quantity: ");
+        productPricePanel = new NumericPanel("Price: ");
+        productCategoryPanel = new StringPanel("Category: ");
         productPanel.add(productNamePanel);
         productPanel.add(productQuantityPanel);
         productPanel.add(productPricePanel);
         productPanel.add(productCategoryPanel);
 
-        JPanel savePanel = new JPanel();
-        saveProductButton = new JButton("Save");
-        JButton deleteProductButton = new JButton("Delete");
-        deleteProductButton.addActionListener(e -> {
-            int index = productList.getSelectedIndex();
-            if (index != -1) {
-                zone.getProducts().remove(productList.getSelectedValue());
-                productList.remove(index);
-                productModel.remove(index);
-                productList.updateUI();
-            }
-        });
-        saveProductButton.setMinimumSize(new Dimension(500, 105));
-        savePanel.add(saveProductButton);
-        savePanel.add(deleteProductButton);
-        saveProductButton.addActionListener(e -> {
-            Product p = new Product(productNamePanel.text.getText(),
-                    (Long) productQuantityPanel.number.getValue(),
-                    (Long) productPricePanel.number.getValue(),
-                    productCategoryPanel.text.getText());
-            if (!newProduct) {
-                int index = productList.getSelectedIndex();
-                zone.getProducts().remove(productList.getSelectedValue());
-                productList.remove(index);
-                productModel.remove(index);
-            }
-            productModel.addElement(p);
-            zone.getProducts().add(p);
-            productList.updateUI();
-        });
+        savePanel = new JPanel();
+        savePanel.add(getDeleteButton());
+        savePanel.add(getSaveButton());
 
 
-        JPanel allPanel = new JPanel(new BorderLayout());
-        allPanel.add(productPanel, BorderLayout.NORTH);
-        allPanel.add(savePanel, BorderLayout.CENTER);
-
-        productPane.setRightComponent(allPanel);
+        productPane.setRightComponent(getRightPanel());
         productPane.setDividerLocation(this.getWidth() / 3);
 
         productList.getSelectionModel().addListSelectionListener(e -> {
@@ -107,18 +84,85 @@ public class AddProductsFrame extends JFrame {
             newProduct = false;
         });
 
-        addButton = new JButton("Add");
-        addButton.setPreferredSize(new Dimension(100, 50));
-        addButton.addActionListener(e -> {
+        this.add(getAddButton(), BorderLayout.SOUTH);
+        this.add(productPane, BorderLayout.CENTER);
+        this.setVisible(true);
+
+        addWindowListener(new WindowAdapter() {
+            @Override
+            public void windowClosing(WindowEvent e) {
+                super.windowClosing(e);
+                if (!Objects.equals(name.getText(), "")) {
+                    addProductsController.getZone().setName(name.getText());
+                }
+            }
+        });
+    }
+    
+    private JPanel getNamePanel() {
+        JPanel panel = new JPanel(new FlowLayout());
+        name.setText(addProductsController.getZone().getName());
+        panel.add(name, FlowLayout.LEFT);
+        panel.add(nameLabel, FlowLayout.LEFT);
+        return panel;
+    }
+
+    private JPanel getRightPanel() {
+        JPanel panel = new JPanel(new BorderLayout());
+        panel.add(productPanel, BorderLayout.NORTH);
+        panel.add(savePanel, BorderLayout.CENTER);
+        return panel;
+    }
+
+    private JScrollPane getLeftPanel() {
+        return new JScrollPane(productList);
+    }
+
+    private JButton getDeleteButton() {
+        JButton button = new JButton("Delete");
+        button.addActionListener(e -> {
+            int index = productList.getSelectedIndex();
+            if (index != -1) {
+                addProductsController.getZone().getProducts().remove(productList.getSelectedValue());
+                productList.remove(index);
+                productModel.remove(index);
+                productList.updateUI();
+            }
+        });
+        return button;
+    }
+
+    private JButton getSaveButton() {
+        JButton button = new JButton("Save");
+        button.setMinimumSize(new Dimension(500, 105));
+        button.addActionListener(e -> {
+            Product p = new Product(productNamePanel.text.getText(),
+                    (Long) productQuantityPanel.number.getValue(),
+                    (Long) productPricePanel.number.getValue(),
+                    productCategoryPanel.text.getText());
+            if (!newProduct) {
+                int index = productList.getSelectedIndex();
+                addProductsController.getZone().getProducts().remove(productList.getSelectedValue());
+                productList.remove(index);
+                productModel.remove(index);
+            }
+            productModel.addElement(p);
+            addProductsController.getZone().getProducts().add(p);
+            productList.updateUI();
+        });
+        return button;
+    }
+
+    private JButton getAddButton() {
+        JButton button = new JButton("Add");
+        button.setPreferredSize(new Dimension(100, 50));
+        button.addActionListener(e -> {
             productNamePanel.text.setText("");
             productQuantityPanel.number.setValue(0L);
             productPricePanel.number.setValue(0L);
             productCategoryPanel.text.setText("");
             newProduct = true;
         });
-        this.add(addButton, BorderLayout.SOUTH);
-
-        this.add(productPane, BorderLayout.CENTER);
-        this.setVisible(true);
+        return button;
     }
 }

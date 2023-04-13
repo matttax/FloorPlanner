@@ -21,7 +21,7 @@ public abstract class AbstractDAO<T, K> {
         return source.statement(
                 stat -> {
                     Set<T> data = new HashSet<>();
-                    ResultSet resSet = stat.executeQuery("SELECT * FROM " + tableName);
+                    ResultSet resSet = stat.executeQuery("SELECT * FROM floorplanner." + tableName);
                     while (resSet.next()) {
                         data.add(getObject(resSet));
                     }

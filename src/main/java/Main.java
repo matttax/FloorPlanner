@@ -1,6 +1,7 @@
 import GUI.MapFrame;
 import com.mysql.cj.jdbc.MysqlConnectionPoolDataSource;
 import jep.*;
+import service.dao.FloorDAO;
 import service.db.DbInit;
 import service.db.JdbcTemplate;
 
@@ -14,6 +15,8 @@ public class Main {
         JdbcTemplate source = new JdbcTemplate(pool);
         DbInit dbInit = new DbInit(source);
         dbInit.create();
+        FloorDAO fd = new FloorDAO(source);
+        System.out.println(fd.getAllData());
         new MapFrame("test/map1.jpg");
     }
 }

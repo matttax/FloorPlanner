@@ -21,6 +21,7 @@ public class Zone {
         StringBuilder sb = new StringBuilder();
         sb.append(tab).append("<zone>\n");
         sb.append(tab).append("\t<name>").append(name).append("</name>\n");
+        sb.append(tab).append("\t<point>").append(pointOnMap.x).append(" ").append(pointOnMap.y).append("</point>\n");
         sb.append(tab).append("\t<products>");
         for (Product p : products) {
             sb.append(tab).append(p.toXml(tab + "\t")).append("\n");

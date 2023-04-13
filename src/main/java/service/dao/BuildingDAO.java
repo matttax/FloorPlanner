@@ -54,6 +54,10 @@ public class BuildingDAO extends AbstractDAO<Building, Integer> {
 
     @Override
     protected Building getObject(ResultSet resSet) throws SQLException {
-        return null;
+        long buildingId = resSet.getLong("building_id");
+        String name = resSet.getString("name");
+        String address = resSet.getString("address");
+        String categories = resSet.getString("categories");
+        return new Building(buildingId, name, address, categories);
     }
 }
