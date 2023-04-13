@@ -7,12 +7,14 @@ import jep.SharedInterpreter;
 import java.awt.*;
 import java.nio.file.Files;
 import java.nio.file.Path;
+import java.nio.file.Paths;
 import java.util.ArrayList;
 
 public class PythonReader {
 
     static {
-        String pythonFolder = "/home/matttax/IdeaProjects/FloorPlanner/JEP";
+        String currentFolder = Paths.get("").toAbsolutePath().toString();
+        String pythonFolder = currentFolder + "/JEP";
         String jepPath = pythonFolder + "/jep/libjep.jnilib";
         if (!Files.exists(Path.of(jepPath))){
             jepPath = pythonFolder + "/jep/libjep.so";

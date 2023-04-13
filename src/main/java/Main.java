@@ -10,13 +10,21 @@ import java.sql.SQLException;
 
 public class Main {
 
-    public static void main(String[] args) throws IOException, JepException, SQLException {
+    public static void main(String[] args) {
         MysqlConnectionPoolDataSource pool = new MysqlConnectionPoolDataSource();
-        JdbcTemplate source = new JdbcTemplate(pool);
-        DbInit dbInit = new DbInit(source);
-        dbInit.create();
-        FloorDAO fd = new FloorDAO(source);
-        System.out.println(fd.getAllData());
-        new MapFrame("test/map1.jpg");
+        JdbcTemplate source = null;
+        DbInit dbInit = null;
+        try {
+            source = new JdbcTemplate(pool);
+            dbInit = new DbInit(source);
+            dbInit.create();
+        } catch (SQLException | IOException e) {
+            System.err.println("Unable to connect to the database");
+        }
+        try {
+            new MapFrame("test/map1.jpg");
+        } catch (Exception e) {
+            System.err.println("File not found");
+        }
     }
 }

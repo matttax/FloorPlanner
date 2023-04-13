@@ -7,6 +7,7 @@ import java.io.FileInputStream;
 import java.io.IOException;
 import java.io.InputStreamReader;
 import java.nio.charset.StandardCharsets;
+import java.nio.file.Paths;
 import java.sql.SQLException;
 import java.util.stream.Collectors;
 
@@ -23,7 +24,8 @@ public class DbInit {
     }
 
     public void create() throws SQLException, IOException {
-        String[] sql = getSQL("/home/matttax/IdeaProjects/FloorPlanner/src/main/SQLScripts/create_db.sql").split(";");
+        String currentFolder = Paths.get("").toAbsolutePath().toString();
+        String[] sql = getSQL(currentFolder + "/src/main/SQLScripts/create_db.sql").split(";");
         for (String str : sql) {
             source.statement(stmt -> {
                 stmt.execute(str);

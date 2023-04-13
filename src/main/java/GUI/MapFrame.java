@@ -43,7 +43,7 @@ public class MapFrame extends JFrame {
     private  JButton getNewMapButton() {
         JButton button = new JButton("New map");
         button.addActionListener(e -> {
-            JFileChooser openFile = new JFileChooser("/home/matttax/IdeaProjects/FloorPlanner/test/");
+            JFileChooser openFile = new JFileChooser();
             int ret = openFile.showDialog(null, "Открыть файл");
             if (ret == JFileChooser.APPROVE_OPTION) {
                 new MapFrame(String.valueOf(openFile.getSelectedFile()));
